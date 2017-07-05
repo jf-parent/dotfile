@@ -1,0 +1,8 @@
+# git stuff
+alias gcm='git bulk checkout master'
+alias gbs='git bulk status'
+alias gs='git status'
+alias gitmerge='git mergetool -t vimdiff'
+alias get='git pull'
+
+# vim: set syn=sh :

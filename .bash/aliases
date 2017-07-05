@@ -1,0 +1,5 @@
+for i in /root/.bash/alias_lib/*; do
+    . $i
+done
+
+# vim: set syn=sh :

@@ -1,0 +1,24 @@
+# common aliases
+
+alias clear='echo -e "\e[2J"'
+alias ls='ls --color=always'
+alias ll='ls -AFlh --group-directories-first'
+alias lf='ll -rt'
+alias las='ls -las --color=always'
+alias l='lf'
+alias nl="nl -ba"
+
+alias p='pushd'
+alias o='popd'
+alias d='dirs'
+alias less='less -R'
+
+
+alias follow=". ~/bin/follow"
+
+alias vdb="vim -c 'python debugger.run()'"
+alias tm='tmux attach'
+alias pyg='pygmentize -f 256 -O style=monokai'
+
+alias webbase="cd /root/PROG/PYTHON/webbase/"
+# vim: set ft=sh :

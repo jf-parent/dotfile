@@ -1,0 +1,10 @@
+let g:netrw_dirhistmax  =10
+let g:netrw_dirhist_cnt =8
+let g:netrw_dirhist_1='/Users/pyrat/Documents/PROG/dotfiles-1/.vim'
+let g:netrw_dirhist_2='/Users/pyrat/Documents/PROG/dotfiles/.bash'
+let g:netrw_dirhist_3='/Users/pyrat/Documents/PROG/dotfiles/.vim'
+let g:netrw_dirhist_4='/Users/pyrat/Documents/PROG/PYTHON/artscripts/.git'
+let g:netrw_dirhist_5='/Users/pyrat/Documents/PROG/PYTHON/artscripts/script_1'
+let g:netrw_dirhist_6='/Users/pyrat/Documents/PROG/PYTHON/cob_v1/resources'
+let g:netrw_dirhist_7='/Users/pyrat/Documents/PROG/PYTHON/brome_test_release/venv/lib/python3.5/site-packages/brome-1.1.0-py3.5.egg/EGG-INFO'
+let g:netrw_dirhist_8='/Users/pyrat/Documents/PROG/PYTHON/webbase/db_migration_scripts'
