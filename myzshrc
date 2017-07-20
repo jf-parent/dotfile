@@ -1,0 +1,6 @@
+export WORKON_HOME=$HOME/.virtualenvs
+export PROJECT_HOME=$HOME/Documents/PROG
+source /usr/local/bin/virtualenvwrapper.sh
+
+EDITOR=vim
+VISUAL=vim
