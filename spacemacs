@@ -31,26 +31,37 @@ values."
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '(
-     markdown
-     python
      ;; ----------------------------------------------------------------
      ;; Example of useful layers you may want to use right away.
      ;; Uncomment some layer names and press <SPC f e R> (Vim style) or
      ;; <M-m f e R> (Emacs style) to install them.
      ;; ----------------------------------------------------------------
-     helm
-     ;; auto-completion
-     ;; better-defaults
+     (python :variables python-test-runner'pytest)
+     (shell :variables shell-default-shell'term
+            shell-default-position 'bottom shell-default-height
+            30 shell-default-term-shell "/bin/zsh")
+     auto-completion
+     eww
+     better-defaults
+     clojure
+     common-lisp
+     csv
      emacs-lisp
-     ;; git
-     ;; markdown
+     git
+     gtags
+     helm
+     javascript
+     journal
+     markdown
      org
-     ;; (shell :variables
-     ;;        shell-default-height 30
-     ;;        shell-default-position 'bottom)
-     ;; spell-checking
-     ;; syntax-checking
-     ;; version-control
+     orgwiki
+     react
+     semantic
+     spell-checking
+     sql
+     syntax-checking
+     version-control
+     yaml
      )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
@@ -134,8 +145,9 @@ values."
    dotspacemacs-colorize-cursor-according-to-state t
    ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
    ;; quickly tweak the mode-line size to make separators look not too crappy.
-   dotspacemacs-default-font '("Source Code Pro"
-                               :size 13
+   ;; "Source Code Pro"
+   dotspacemacs-default-font '("Hack"
+                               :size 15
                                :weight normal
                                :width normal
                                :powerline-scale 1.1)
@@ -248,8 +260,18 @@ values."
    ;; scrolling overrides the default behavior of Emacs which recenters point
    ;; when it reaches the top or bottom of the screen. (default t)
    dotspacemacs-smooth-scrolling t
-   ;; If non nil line numbers are turned on in all `prog-mode' and `text-mode'
-   ;; derivatives. If set to `relative', also turns on relative line numbers.
+   ;; Control line numbers activation.
+   ;; If set to `t' or `relative' line numbers are turned on in all `prog-mode' and
+   ;; `text-mode' derivatives. If set to `relative', line numbers are relative.
+   ;; This variable can also be set to a property list for finer control:
+   ;; '(:relative nil
+   ;;   :disabled-for-modes dired-mode
+   ;;                       doc-view-mode
+   ;;                       markdown-mode
+   ;;                       org-mode
+   ;;                       pdf-view-mode
+   ;;                       text-mode
+   ;;   :size-limit-kb 1000)
    ;; (default nil)
    dotspacemacs-line-numbers nil
    ;; Code folding method. Possible values are `evil' and `origami'.
@@ -301,6 +323,113 @@ layers configuration.
 This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
+  ;; Orgmode
+  ;; (setq org-default-notes-file (concat org-directory "~/Google Drive/org/capture.org"))
+  (setq org-confirm-babel-evaluate nil)
+  (define-key global-map "\C-cc" 'org-capture)
+  (setq org-journal-dir "~/Google Drive/org/journal")
+  (require 'org-tempo)
+  (setq org-wiki-location "~/Google Drive/org/wiki")
+  ;; https://gist.github.com/jf-parent/9d53a3d22338de3b0c983c3b6ab4b453
+  (custom-set-variables
+   '(org-capture-templates
+     '(
+       ("t" "Task" entry (file+headline "~/Google Drive/org/PREC.org" "ONETIME") "** %^{PROMPT}")
+       ("T" "Training" table-line (file+headline "~/Google Drive/org/wiki/journal2019.org" "Training log") "| %t | %^{prompt|TrainementSS|MartialArt|Bodyweight|Kettlebell|WimHof|Yoga|Mobility} | %^{prompt|0|10|15|20} |")
+       ("a" "Abacus" table-line (file+headline "~/Google Drive/org/wiki/abacus.org" "Logs - Anzan") "| %t | %^{prompt}/20 | %^{prompt|[3rows][3digits][2500ms][no-sound]} |")
+       ("c" "Commute" table-line (file+headline "~/Google Drive/org/wiki/journal2019.org" "Commute log") "| %t | %^{prompt|Car/Bus|Bus/Car} | %^{prompt|4:05am|1:10pm} | %^{prompt|5:50am|3:05pm} | %^{prompt|Office|Home} | %^{prompt} | %^{prompt} |")
+       ("S" "Smoking" table-line (file+headline "~/Google Drive/org/wiki/journal2019.org" "Smoking log") "| %t | %^{prompt|1} | %^{prompt|Malboro} |")
+       ("s" "Sleep" table-line (file+headline "~/Google Drive/org/wiki/journal2019.org" "Sleeping log") "| %t | %^{prompt|18:00} | %^{prompt|3:30} | %^{prompt|9.0} |"))))
+
+  ;;TODO fix chinese 
+  ;;(spacemacs//set-monospaced-font   "Source Code Pro" "Hiragino Sans GB" 14 16)
+
+  ;; JAVASCRIPT
+  (setq-default js2-basic-offset 2)
+  (setq-default js-indent-level 2)
+  (defun my-web-mode-hook ()
+    (setq web-mode-markup-indent-offset 2)
+    (setq web-mode-css-indent-offset 2)
+    (setq web-mode-code-indent-offset 2)
+    (setq web-mode-indent-style 2))
+  (add-hook 'web-mode-hook  'my-web-mode-hook)
+
+  ;; Term
+  (define-key evil-insert-state-map (kbd "C-c C-v") 'term-paste)
+
+  ;; EWW
+  ;; Adapted from https://github.com/Fuco1/org-mode/blob/master/contrib/lisp/org-eww.el
+  (defun my-copy-url-below-point ()
+    "Add to the kill ring the link (in orgmode format) below point."
+    (interactive)
+    (kill-new (org-make-link-string
+               (get-text-property
+                (point) 'shr-url)
+               (buffer-substring
+                (point) (org-eww-goto-next-url-property-change)))))
+
+  ;; https://github.com/kaushalmodi/.emacs.d/blob/master/setup-files/setup-eww.el
+  (when (fboundp 'eww)
+    (defun xah-rename-eww-buffer ()
+      "Rename `eww-mode' buffer so sites open in new page."
+      (let (($title (plist-get eww-data :title)))
+        (when (eq major-mode 'eww-mode )
+          (if $title
+              (rename-buffer (concat "eww " $title ) t)
+            (rename-buffer "eww" t)))))
+    (add-hook 'eww-after-render-hook 'xah-rename-eww-buffer))
+
+  ;; https://github.com/emacs-helm/helm-eww
+  (load "~/.emacs.d/private/helm-eww")
+
+  (defun my-copy-link ()
+    (interactive)
+    (let ((url (eww-copy-page-url))
+          (description (plist-get eww-data :title)))
+      (kill-new (org-make-link-string url description))))
+
+  (defun my-open-link ()
+    (interactive)
+    ;; Orgmode Link
+    ;; move forward pass the [[ in [[link][text]]
+    (while (char-equal (char-after (point)) ?\[)
+      (forward-char))
+    (let ((url (thing-at-point 'url t)))
+      (if (null url) (user-error "No link at point")
+        ;; HACK unsane default; should be a buffer name?
+        (winum-select-window-by-number 4)
+        (with-current-buffer
+            (if (eq major-mode 'eww-mode) (clone-buffer)
+              (generate-new-buffer "*eww*"))
+          (unless (equal url (eww-current-url))
+            (eww-mode)
+            (eww (if (consp url) (car url) url)))))))
+  (global-set-key (kbd "C-c o") 'my-open-link)
+
+  ;; Lisp
+  (setq inferior-lisp-program "/usr/local/bin/sbcl")
+  ;;(require 'slime-cl-indent)
+  ;; (add-to-list 'slime-contribs 'slime-cl-indent)
+  ;;(setq slime-contribs '(slime-cl-indent))
+  ;;(slime-setup '(slime-fancy))
+
+  ;; Workspace & Layout
+  (setq dotspacemacs-auto-resume-layouts t)
+
+  (setq-default dotspacemacs-configuration-layers '((python :variables python-fill-column 120)))
+  (setq-default
+   ;; js2-mode
+   js2-basic-offset 2
+   ;; web-mode
+   css-indent-offset 2
+   web-mode-markup-indent-offset 2
+   web-mode-css-indent-offset 2
+   web-mode-code-indent-offset 2
+   web-mode-attr-indent-offset 2)
+  (with-eval-after-load 'web-mode
+    (add-to-list 'web-mode-indentation-params '("lineup-args" . nil))
+    (add-to-list 'web-mode-indentation-params '("lineup-concats" . nil))
+    (add-to-list 'web-mode-indentation-params '("lineup-calls" . nil)))
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
@@ -310,12 +439,20 @@ you should place your code here."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(org-agenda-files
+   (quote
+    ("~/Google Drive/org/wiki/SGD.org" "~/Google Drive/org/wiki/shambaintel.org" "~/Google Drive/org/wiki/wrec.org" "~/Google Drive/org/wiki/jobs.org" "~/Google Drive/org/PREC.org" "~/Google Drive/org/wiki/middlegame.org" "~/Google Drive/org/wiki/finance.org" "~/Google Drive/org/wiki/opening.org" "~/Google Drive/org/wiki/oiganisation.org" "~/Google Drive/org/wiki/writing.org" "~/Google Drive/org/CFORCE.org")))
  '(package-selected-packages
    (quote
-    (mmm-mode markdown-toc markdown-mode gh-md yapfify pyvenv pytest pyenv-mode py-isort pip-requirements live-py-mode hy-mode helm-pydoc cython-mode anaconda-mode pythonic org-projectile org-present org org-pomodoro alert log4e gntp org-download htmlize gnuplot ws-butler window-numbering which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint info+ indent-guide ido-vertical-mode hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make projectile pkg-info epl helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump f s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed dash aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async quelpa package-build spacemacs-theme))))
+    (yaml-mode helm-gtags ggtags yapfify xterm-color web-mode web-beautify unfill tagedit stickyfunc-enhance srefactor sql-indent smeargle slime-company slime slim-mode shell-pop scss-mode sass-mode pyvenv pytest pyenv-mode py-isort pug-mode pip-requirements orgit org-wiki org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-mime org-journal org-download mwim multi-term mmm-mode markdown-toc markdown-mode magit-gitflow magit-popup livid-mode skewer-mode simple-httpd live-py-mode json-mode json-snatcher json-reformat js2-refactor js2-mode js-doc hy-mode htmlize helm-pydoc helm-gitignore helm-css-scss helm-company helm-c-yasnippet haml-mode gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe+ git-gutter-fringe fringe-helper git-gutter+ git-gutter gh-md fuzzy flyspell-correct-helm flyspell-correct flycheck-pos-tip pos-tip flycheck evil-magit magit transient git-commit with-editor eshell-z eshell-prompt-extras esh-help emmet-mode diff-hl cython-mode csv-mode company-web web-completion-data company-tern dash-functional tern company-statistics company-anaconda company common-lisp-snippets coffee-mode clojure-snippets clj-refactor inflections edn multiple-cursors paredit peg cider-eval-sexp-fu cider sesman queue parseedn clojure-mode parseclj a auto-yasnippet yasnippet auto-dictionary anaconda-mode pythonic ac-ispell auto-complete ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint indent-guide hydra lv hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-themes helm-swoop helm-projectile projectile pkg-info epl helm-mode-manager helm-make helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist highlight evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu elisp-slime-nav dumb-jump f dash s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
+
+(defun sgd/init ()
+  (interactive)
+  (set-fill-column 120)
+  (spacemacs/toggle-fill-column-indicator-on))

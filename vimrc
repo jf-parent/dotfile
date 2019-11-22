@@ -1,8 +1,8 @@
+"COLORSCHEME
+"colorscheme koehler
+
 "GVIM
 behave mswin            " Enable right click menu 
-
-"DISABLE PYFLAKE
-:let b:did_pyflakes_plugin=1
 
 "SET
 set noerrorbells        " No noise.
@@ -20,7 +20,6 @@ set smarttab
 set autoindent
 set smartindent
 set backspace=indent,eol,start
-set backupcopy=yes
 set incsearch
 set ignorecase
 set ruler
@@ -37,7 +36,7 @@ set spelllang=en,fr
 set omnifunc=csscomplete#CompleteCSS
 "Code folding
 "set foldmethod=indent
-set foldlevel=99
+"set foldlevel=99
 "set foldlevel=0
 
 "GROUP
@@ -60,6 +59,7 @@ au BufWinEnter *.cpp set complete-=i
 "ABBREVIATION
 abbreviate boit bot_id 
 abbreviate right rigth
+
 "BOOL
 syntax on
 
@@ -71,47 +71,52 @@ filetype plugin on
 "let Tlist_Auto_Open = 1
 " Taglist variables
 " Display function name in status bar:
-"let g:ctags_statusline=1
+let g:ctags_statusline=1
 " Automatically start script
-"let generate_tags=1
+let generate_tags=1
 " Displays taglist results in a vertical window:
-"let Tlist_Use_Horiz_Window=0
+let Tlist_Use_Horiz_Window=0
 " Various Taglist diplay config:
-"let Tlist_Use_Right_Window = 1
-"let Tlist_Compact_Format = 1
-"let Tlist_Exit_OnlyWindow = 1
-"let Tlist_GainFocus_On_ToggleOpen = 1
-"let Tlist_File_Fold_Auto_Close = 1
+let Tlist_Use_Right_Window = 1
+let Tlist_Compact_Format = 1
+let Tlist_Exit_OnlyWindow = 1
+let Tlist_GainFocus_On_ToggleOpen = 1
+let Tlist_File_Fold_Auto_Close = 1
 "let g:pydiction_location = '~/.vim/after/ftplugin/pydiction/complete-dict' 
-let g:user_emmet_settings = {
-  \  'jsx' : {
-  \    'extends' : 'html',
-  \  }
-  \}
-let g:user_emmet_leader_key='<C-Z>'
-let g:syntastic_always_populate_loc_list = 1
 
 "AUTOCMD
 "autocmd VimEnter * NERDTree
 "autocmd VimEnter * wincmd p
-let NERDTreeShowHidden=1
+
+"REMAP
+"New tab and browse
+noremap to <Esc>:browse tabnew<CR>
+"New tab and favex
+noremap tn <Esc>:tabnew<CR>\fe
+"Hide line number
+nnoremap <F2> :set nonumber!<CR>:set foldcolumn=0<CR> :set nolist!<CR>
+"show Nerdtree
+noremap <F3> :NERDTree<CR>
+"Show taglist
+noremap <F4> :TlistToggle<CR>
+"Close the top window
+nnoremap <F5> <c-w><Up>:q!<CR>
+" Reread vim config 
+noremap <F6>  :source $HOME/.vimrc<CR> 
+" Numbers.vim mapping
+nnoremap <F7> :NumbersToggle<CR> 
+"Save 
+nnoremap <F8> :w<CR>
+" Shorter commands to toggle Taglist display
+nnoremap TT :TlistToggle<CR>
+"Omnicompletion remap
+inoremap <C-space> <C-x><C-o>
+"Window Navigation remap
+noremap <c-j> <c-w>j
+noremap <c-k> <c-w>k
+noremap <c-l> <c-w>l
+noremap <c-h> <c-w>h
 
 ":command! -complete=file -nargs=1 Rpdf :r !pdftotext -nopgbrk <q-args> -
 
-:echom "Hi Pyrat! (>^.^<)"
-:echom "Mnemonic of new commands to use"
-:echom "###"
-:echom "[*] reindent: gg=G"
-:echom "[*] Emmet mapping <C-Z>,"
-:echom "[*] Visual Block <C-v>,"
-":echom "TernDef: Jump to the definition of the thing under the cursor."
-":echom "TernDoc: Look up the documentation of something."
-":echom "TernType: Find the type of the thing under the cursor."
-":echom "TernRefs: Show all references to the variable or property under the cursor."
-":echom "TernRename: Rename the variable under the cursor."
-:echom "[*] Quickly edit your macros:"
-:echom "    Use it like this <leader>m or \"q<leader>m."
-:echom "[*] https://github.com/mhinz/vim-galore#undo-tree"
-:echom "[*] gU[w,$] => Make UPPERCASE [word, end-of-line]"
-:echom "[*] https://github.com/mhinz/vim-galore#folding"
-:echom "###"
+":echom "Hi Pyrat! (>^.^<) Pikachu"
