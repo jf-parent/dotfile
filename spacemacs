@@ -67,7 +67,7 @@ values."
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '()
+   dotspacemacs-additional-packages '(git mustache)
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
    ;; A list of packages that will not be installed and loaded.
@@ -406,6 +406,27 @@ you should place your code here."
             (eww (if (consp url) (car url) url)))))))
   (global-set-key (kbd "C-c o") 'my-open-link)
 
+  (defun load-directory (dir)
+    (let ((load-it (lambda (f)
+		                 (load-file (concat (file-name-as-directory dir) f)))
+		               ))
+	    (mapc load-it (directory-files dir nil "\\.el$"))))
+
+  ;; Org-Page
+  ;; @TODO load org-page properly
+  ;; @HACK
+  (load-file "/Users/jean-francoisparent/Documents/PROG/dotfile/emacs.d/private/org-page/op-util.el")
+  (load-file "/Users/jean-francoisparent/Documents/PROG/dotfile/emacs.d/private/org-page/op-vars.el")
+  (load-file "/Users/jean-francoisparent/Documents/PROG/dotfile/emacs.d/private/org-page/op-git.el")
+  (load-file "/Users/jean-francoisparent/Documents/PROG/dotfile/emacs.d/private/org-page/op-enhance.el")
+  (load-file "/Users/jean-francoisparent/Documents/PROG/dotfile/emacs.d/private/org-page/op-template.el")
+  (load-file "/Users/jean-francoisparent/Documents/PROG/dotfile/emacs.d/private/org-page/op-export.el")
+  (load-file "/Users/jean-francoisparent/Documents/PROG/dotfile/emacs.d/private/org-page/org-page.el")
+  (setq op/repository-directory "/Users/jean-francoisparent/Google Drive/org/blog/")
+  (setq op/site-domain "https://jf-parent.github.io")
+  (setq op/personal-github-link "https://github.com/jf-parent")
+  (setq op/theme 'pyrat)
+
   ;; Lisp
   (setq inferior-lisp-program "/usr/local/bin/sbcl")
   ;;(require 'slime-cl-indent)
@@ -442,9 +463,29 @@ you should place your code here."
  '(org-agenda-files
    (quote
     ("~/Google Drive/org/wiki/SGD.org" "~/Google Drive/org/wiki/shambaintel.org" "~/Google Drive/org/wiki/wrec.org" "~/Google Drive/org/wiki/jobs.org" "~/Google Drive/org/PREC.org" "~/Google Drive/org/wiki/middlegame.org" "~/Google Drive/org/wiki/finance.org" "~/Google Drive/org/wiki/opening.org" "~/Google Drive/org/wiki/oiganisation.org" "~/Google Drive/org/wiki/writing.org" "~/Google Drive/org/CFORCE.org")))
+ '(org-capture-templates
+   (quote
+    (("t" "Task" entry
+      (file+headline "~/Google Drive/org/PREC.org" "ONETIME")
+      "** %^{PROMPT}")
+     ("T" "Training" table-line
+      (file+headline "~/Google Drive/org/wiki/journal2019.org" "Training log")
+      "| %t | %^{prompt|TrainementSS|MartialArt|Bodyweight|Kettlebell|WimHof|Yoga|Mobility} | %^{prompt|0|10|15|20} |")
+     ("a" "Abacus" table-line
+      (file+headline "~/Google Drive/org/wiki/abacus.org" "Logs - Anzan")
+      "| %t | %^{prompt}/20 | %^{prompt|[3rows][3digits][2500ms][no-sound]} |")
+     ("c" "Commute" table-line
+      (file+headline "~/Google Drive/org/wiki/journal2019.org" "Commute log")
+      "| %t | %^{prompt|Car/Bus|Bus/Car} | %^{prompt|4:05am|1:10pm} | %^{prompt|5:50am|3:05pm} | %^{prompt|Office|Home} | %^{prompt} | %^{prompt} |")
+     ("S" "Smoking" table-line
+      (file+headline "~/Google Drive/org/wiki/journal2019.org" "Smoking log")
+      "| %t | %^{prompt|1} | %^{prompt|Malboro} |")
+     ("s" "Sleep" table-line
+      (file+headline "~/Google Drive/org/wiki/journal2019.org" "Sleeping log")
+      "| %t | %^{prompt|18:00} | %^{prompt|3:30} | %^{prompt|9.0} |"))))
  '(package-selected-packages
    (quote
-    (yaml-mode helm-gtags ggtags yapfify xterm-color web-mode web-beautify unfill tagedit stickyfunc-enhance srefactor sql-indent smeargle slime-company slime slim-mode shell-pop scss-mode sass-mode pyvenv pytest pyenv-mode py-isort pug-mode pip-requirements orgit org-wiki org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-mime org-journal org-download mwim multi-term mmm-mode markdown-toc markdown-mode magit-gitflow magit-popup livid-mode skewer-mode simple-httpd live-py-mode json-mode json-snatcher json-reformat js2-refactor js2-mode js-doc hy-mode htmlize helm-pydoc helm-gitignore helm-css-scss helm-company helm-c-yasnippet haml-mode gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe+ git-gutter-fringe fringe-helper git-gutter+ git-gutter gh-md fuzzy flyspell-correct-helm flyspell-correct flycheck-pos-tip pos-tip flycheck evil-magit magit transient git-commit with-editor eshell-z eshell-prompt-extras esh-help emmet-mode diff-hl cython-mode csv-mode company-web web-completion-data company-tern dash-functional tern company-statistics company-anaconda company common-lisp-snippets coffee-mode clojure-snippets clj-refactor inflections edn multiple-cursors paredit peg cider-eval-sexp-fu cider sesman queue parseedn clojure-mode parseclj a auto-yasnippet yasnippet auto-dictionary anaconda-mode pythonic ac-ispell auto-complete ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint indent-guide hydra lv hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-themes helm-swoop helm-projectile projectile pkg-info epl helm-mode-manager helm-make helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist highlight evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu elisp-slime-nav dumb-jump f dash s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async))))
+    (mustache ht git org-page yaml-mode helm-gtags ggtags yapfify xterm-color web-mode web-beautify unfill tagedit stickyfunc-enhance srefactor sql-indent smeargle slime-company slime slim-mode shell-pop scss-mode sass-mode pyvenv pytest pyenv-mode py-isort pug-mode pip-requirements orgit org-wiki org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-mime org-journal org-download mwim multi-term mmm-mode markdown-toc markdown-mode magit-gitflow magit-popup livid-mode skewer-mode simple-httpd live-py-mode json-mode json-snatcher json-reformat js2-refactor js2-mode js-doc hy-mode htmlize helm-pydoc helm-gitignore helm-css-scss helm-company helm-c-yasnippet haml-mode gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe+ git-gutter-fringe fringe-helper git-gutter+ git-gutter gh-md fuzzy flyspell-correct-helm flyspell-correct flycheck-pos-tip pos-tip flycheck evil-magit magit transient git-commit with-editor eshell-z eshell-prompt-extras esh-help emmet-mode diff-hl cython-mode csv-mode company-web web-completion-data company-tern dash-functional tern company-statistics company-anaconda company common-lisp-snippets coffee-mode clojure-snippets clj-refactor inflections edn multiple-cursors paredit peg cider-eval-sexp-fu cider sesman queue parseedn clojure-mode parseclj a auto-yasnippet yasnippet auto-dictionary anaconda-mode pythonic ac-ispell auto-complete ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint indent-guide hydra lv hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-themes helm-swoop helm-projectile projectile pkg-info epl helm-mode-manager helm-make helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist highlight evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu elisp-slime-nav dumb-jump f dash s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
