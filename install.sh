@@ -35,6 +35,6 @@ ln -s $PWD/emacs.d $INSTALLDIR/.emacs.d 2> /dev/null
 
 #PSQL
 mv $INSTALLDIR/.psqlrc $INSTALLDIR/.psqlrc.old
-n -s $PWD/psqlrc $INSTALLDIR/.psqlrc 2> /dev/null
+ln -s $PWD/psqlrc $INSTALLDIR/.psqlrc 2> /dev/null
 
 echo "Done. Conflicting existing dotfiles were moved to <file>.old"
