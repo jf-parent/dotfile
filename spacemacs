@@ -36,10 +36,6 @@ values."
      ;; Uncomment some layer names and press <SPC f e R> (Vim style) or
      ;; <M-m f e R> (Emacs style) to install them.
      ;; ----------------------------------------------------------------
-     (python :variables python-test-runner'pytest)
-     (shell :variables shell-default-shell'term
-            shell-default-position 'bottom shell-default-height
-            30 shell-default-term-shell "/bin/zsh")
      auto-completion
      mu4e
      eww
@@ -56,8 +52,12 @@ values."
      markdown
      org
      orgwiki
+     (python :variables python-test-runner'pytest)
      react
      semantic
+     (shell :variables shell-default-shell'term
+            shell-default-term-shell "/bin/zsh"
+            shell-default-position 'bottom shell-default-height 30)
      spell-checking
      sql
      syntax-checking
@@ -68,11 +68,11 @@ values."
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '(git mustache mu4e-alert)
+   dotspacemacs-additional-packages '(git mustache mu4e-alert org-msg)
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
    ;; A list of packages that will not be installed and loaded.
-   dotspacemacs-excluded-packages '()
+   dotspacemacs-excluded-packages '(org-projectile)
    ;; Defines the behaviour of Spacemacs when installing packages.
    ;; Possible values are `used-only', `used-but-keep-unused' and `all'.
    ;; `used-only' installs only explicitly used packages and uninstall any
@@ -324,8 +324,16 @@ layers configuration.
 This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
+  (require 'org-protocol)
+
+  ;; flyspell
+  (add-hook 'text-mode-hook 'flyspell-mode)
+  (add-hook 'prog-mode-hook 'flyspell-prog-mode)
 
   ;; Mu4e
+  ;; https://emacs.stackexchange.com/questions/46156/how-to-install-mu-and-mu4e-with-gui-emacs
+  (add-to-list 'load-path "/usr/local/share/emacs/site-lisp/mu/mu4e")
+  (require 'mu4e)
   (setq mu4e-maildir "~/.Mail"
         mu4e-trash-folder "/Trash"
         mu4e-refile-folder "/Archive"
@@ -337,8 +345,25 @@ you should place your code here."
 
   (setq mu4e-enable-mode-line t)
   (setq mu4e-enable-notifications t)
+
   ;; shortcuts
-  ;; (setq mu4e-maildir-shortcuts '(("/INBOX" . ?i)))
+  (setq mu4e-maildir-shortcuts
+        '(("/parent.j.f@gmail.com/INBOX"               . ?i)
+          ("/parent.j.f@gmail.com/Feed"                . ?f)))
+
+  (require 'smtpmail)
+  (setq message-send-mail-function 'smtpmail-send-it
+        starttls-use-gnutls t
+        smtpmail-starttls-credentials '(("smtp.gmail.com" 587 nil nil))
+        smtpmail-auth-credentials
+        '(("smtp.gmail.com" 587 "parent.j.f@gmail.com" nil))
+        smtpmail-default-smtp-server "smtp.gmail.com"
+        smtpmail-smtp-server "smtp.gmail.com"
+        smtpmail-smtp-service 587)
+
+  ;; don't keep message buffers around
+  (setq message-kill-buffer-on-exit t)
+  (setq mu4e-sent-messages-behavior 'delete)
 
   (setq mu4e-show-images t)
 
@@ -352,18 +377,56 @@ you should place your code here."
   ;;   - html2markdown | grep -v '&nbsp_place_holder;' (Requires html2text pypi)
   ;;   - w3m -dump -cols 80 -T text/html
   ;;   - view in browser (provided below)
-  (setq mu4e-html2text-command "textutil -stdin -format html -convert txt -stdout")
+  ;; (setq mu4e-html2text-command "textutil -stdin -format html -convert txt -stdout")
+  (require 'mu4e-contrib)
+  (setq mu4e-html2text-command 'mu4e-shr2text)
+  (add-hook 'mu4e-view-mode-hook
+            (lambda()
+              (local-set-key (kbd "<tab>") 'shr-next-link)
+              (local-set-key (kbd "<backtab>") 'shr-previous-link)))
+  ;; (setq browse-url-browser-function 'eww-browse-url)
 
-  ;; add option to view html message in a browser
-  ;; `aV` in view to activate
-  ;; (add-to-list 'mu4e-view-actions '("ViewInBrowser" . mu4e-action-view-in-browser) t)
-
-  (setq mu4e-update-interval 60)
+  ;; (setq mu4e-update-interval 0.5)
 
   (setq
    user-mail-address "parent.j.f@gmail.com"
    user-full-name  "Jean-François Parent"
    mu4e-compose-signature "Jean-François Parent")
+
+  (setq mail-user-agent 'mu4e-user-agent)
+  ;; org-msg
+  ;; hidestars
+  (require 'org-msg)
+  (setq org-msg-options "html-postamble:nil H:5 num:nil ^:{} toc:nil"
+        org-msg-startup "indent inlineimages"
+        org-msg-greeting-fmt "\nHi *%s*,\n\n"
+        org-msg-greeting-name-limit 3
+        org-msg-signature "
+
+ Regards,
+
+ #+begin_signature
+ -- *Jean-François Parent* \\\\
+ /Sent from my Emacs/
+ #+end_signature")
+  (org-msg-mode)
+
+  ;; Kill the frame if one was created for the capture
+  (defvar my/delete-frame-after-capture 0 "Whether to delete the last frame after the current capture")
+
+  ;; ((> my/delete-frame-after-capture 1)
+  ;;  (setq my/delete-frame-after-capture (- my/delete-frame-after-capture 1)))
+  (defun my/delete-frame-if-neccessary (&rest r)
+    (cond
+     ((= my/delete-frame-after-capture 0) nil)
+     (t
+      (print "my/delete-frame-after-capture")
+      (setq my/delete-frame-after-capture 0)
+      (delete-frame))))
+
+  (advice-add 'org-capture-finalize :after 'my/delete-frame-if-neccessary)
+  (advice-add 'org-capture-kill :after 'my/delete-frame-if-neccessary)
+  (advice-add 'org-capture-refile :after 'my/delete-frame-if-neccessary)
 
   ;; Orgmode
   ;; (setq org-default-notes-file (concat org-directory "~/Google Drive/org/capture.org"))
@@ -372,16 +435,36 @@ you should place your code here."
   (setq org-journal-dir "~/Google Drive/org/journal")
   (require 'org-tempo)
   (setq org-wiki-location "~/Google Drive/org/wiki")
+  (setq org-refile-targets
+        '(("~/Google Drive/org/wiki/hygiene.org" :maxlevel . 1)
+          ("~/Google Drive/org/wiki/philosotrisme-de-oi.org" :maxlevel . 1)
+          ("~/Google Drive/org/wiki/finance.org" :maxlevel . 1)
+          ("~/Google Drive/org/wiki/oiganisation.org" :maxlevel . 1)
+          ("~/Google Drive/org/wiki/chess.org" :maxlevel . 1)
+          ("~/Google Drive/org/wiki/mandarin.org" :maxlevel . 1)
+          ("~/Google Drive/org/wiki/emacs.org" :maxlevel . 1)
+          ("~/Google Drive/org/wiki/music.org" :maxlevel . 1)))
+  (setq org-refile-use-outline-path 'file)
+  ;; makes org-refile outline working with helm/ivy
+  (setq org-outline-path-complete-in-steps nil)
+  (setq org-refile-allow-creating-parent-nodes 'confirm)
+
   ;; https://gist.github.com/jf-parent/9d53a3d22338de3b0c983c3b6ab4b453
+  ;; https://github.com/sprig/org-capture-extension
   (custom-set-variables
    '(org-capture-templates
      '(
        ("t" "Task" entry (file+headline "~/Google Drive/org/PREC.org" "ONETIME") "** %^{PROMPT}")
-       ("T" "Training" table-line (file+headline "~/Google Drive/org/wiki/journal2019.org" "Training log") "| %t | %^{prompt|TrainementSS|MartialArt|Bodyweight|Kettlebell|WimHof|Yoga|Mobility} | %^{prompt|0|10|15|20} |")
+       ("T" "Training" table-line (file+headline "~/Google Drive/org/wiki/journal2020.org" "Training log") "| %t | %^{prompt|TrainementSS|MartialArt|Bodyweight|Kettlebell|WimHof|Yoga|Mobility} | %^{prompt|0|10|15|20} |")
        ("a" "Abacus" table-line (file+headline "~/Google Drive/org/wiki/abacus.org" "Logs - Anzan") "| %t | %^{prompt}/20 | %^{prompt|[3rows][3digits][2500ms][no-sound]} |")
-       ("c" "Commute" table-line (file+headline "~/Google Drive/org/wiki/journal2019.org" "Commute log") "| %t | %^{prompt|Car/Bus|Bus/Car} | %^{prompt|4:05am|1:10pm} | %^{prompt|5:50am|3:05pm} | %^{prompt|Office|Home} | %^{prompt} | %^{prompt} |")
-       ("S" "Smoking" table-line (file+headline "~/Google Drive/org/wiki/journal2019.org" "Smoking log") "| %t | %^{prompt|1} | %^{prompt|Malboro} |")
-       ("s" "Sleep" table-line (file+headline "~/Google Drive/org/wiki/journal2019.org" "Sleeping log") "| %t | %^{prompt|18:00} | %^{prompt|3:30} | %^{prompt|9.0} |"))))
+       ("c" "Commute" table-line (file+headline "~/Google Drive/org/wiki/journal2020.org" "Commute log") "| %t | %^{prompt|Car/Bus|Bus/Car} | %^{prompt|4:05am|1:10pm} | %^{prompt|5:50am|3:05pm} | %^{prompt|Office|Home} | %^{prompt} | %^{prompt} |")
+       ("S" "Smoking" table-line (file+headline "~/Google Drive/org/wiki/journal2020.org" "Smoking log") "| %t | %^{prompt|1} | %^{prompt|Malboro} |")
+       ("s" "Sleep" table-line (file+headline "~/Google Drive/org/wiki/journal2020.org" "Sleeping log") "| %t | %^{prompt|18:00} | %^{prompt|3:30} | %^{prompt|9.0} |")
+       ("p" "Productivity" table-line (file+headline "~/Google Drive/org/wiki/journal2020.org" "Productivity log") "| %t | %^{prompt|3} |")
+       ("e" "Energy" table-line (file+headline "~/Google Drive/org/wiki/journal2020.org" "Energy log") "| %t | %^{prompt|3} |")
+       ("L" "Protocol Link" entry (file+headline "~/Google Drive/org/inbox.org" "Inbox")
+        "** [[%:link][%:description]] %(progn (setq my/delete-frame-after-capture 2) \"\")" :immediate-finish t))))
+  ;; :immediate-finish t
 
   ;;TODO fix chinese 
   ;;(spacemacs//set-monospaced-font   "Source Code Pro" "Hiragino Sans GB" 14 16)
@@ -401,7 +484,7 @@ you should place your code here."
 
   ;; EWW
   ;; Adapted from https://github.com/Fuco1/org-mode/blob/master/contrib/lisp/org-eww.el
-  (defun my-copy-url-below-point ()
+  (defun my/copy-url-below-point ()
     "Add to the kill ring the link (in orgmode format) below point."
     (interactive)
     (kill-new (org-make-link-string
@@ -412,14 +495,14 @@ you should place your code here."
 
   ;; https://github.com/kaushalmodi/.emacs.d/blob/master/setup-files/setup-eww.el
   (when (fboundp 'eww)
-    (defun xah-rename-eww-buffer ()
+    (defun my/rename-eww-buffer ()
       "Rename `eww-mode' buffer so sites open in new page."
       (let (($title (plist-get eww-data :title)))
         (when (eq major-mode 'eww-mode )
           (if $title
               (rename-buffer (concat "eww " $title ) t)
             (rename-buffer "eww" t)))))
-    (add-hook 'eww-after-render-hook 'xah-rename-eww-buffer))
+    (add-hook 'eww-after-render-hook 'my/rename-eww-buffer))
 
   ;; https://github.com/emacs-helm/helm-eww
   (load "~/.emacs.d/private/helm-eww")
@@ -479,7 +562,7 @@ you should place your code here."
   ;; Workspace & Layout
   (setq dotspacemacs-auto-resume-layouts t)
 
-  (setq-default dotspacemacs-configuration-layers '((python :variables python-fill-column 120)))
+  (setq-default dotspacemacs-configuration-layers '((python :variables python-fill-column 120) (spell-checking :variables enable-flyspell-auto-completion t)))
   (setq-default
    ;; js2-mode
    js2-basic-offset 2
@@ -511,23 +594,23 @@ you should place your code here."
       (file+headline "~/Google Drive/org/PREC.org" "ONETIME")
       "** %^{PROMPT}")
      ("T" "Training" table-line
-      (file+headline "~/Google Drive/org/wiki/journal2019.org" "Training log")
+      (file+headline "~/Google Drive/org/wiki/journal2020.org" "Training log")
       "| %t | %^{prompt|TrainementSS|MartialArt|Bodyweight|Kettlebell|WimHof|Yoga|Mobility} | %^{prompt|0|10|15|20} |")
      ("a" "Abacus" table-line
       (file+headline "~/Google Drive/org/wiki/abacus.org" "Logs - Anzan")
       "| %t | %^{prompt}/20 | %^{prompt|[3rows][3digits][2500ms][no-sound]} |")
      ("c" "Commute" table-line
-      (file+headline "~/Google Drive/org/wiki/journal2019.org" "Commute log")
+      (file+headline "~/Google Drive/org/wiki/journal2020.org" "Commute log")
       "| %t | %^{prompt|Car/Bus|Bus/Car} | %^{prompt|4:05am|1:10pm} | %^{prompt|5:50am|3:05pm} | %^{prompt|Office|Home} | %^{prompt} | %^{prompt} |")
      ("S" "Smoking" table-line
-      (file+headline "~/Google Drive/org/wiki/journal2019.org" "Smoking log")
+      (file+headline "~/Google Drive/org/wiki/journal2020.org" "Smoking log")
       "| %t | %^{prompt|1} | %^{prompt|Malboro} |")
      ("s" "Sleep" table-line
-      (file+headline "~/Google Drive/org/wiki/journal2019.org" "Sleeping log")
+      (file+headline "~/Google Drive/org/wiki/journal2020.org" "Sleeping log")
       "| %t | %^{prompt|18:00} | %^{prompt|3:30} | %^{prompt|9.0} |"))))
  '(package-selected-packages
    (quote
-    (mu4e-maildirs-extension mu4e-alert mustache ht git org-page yaml-mode helm-gtags ggtags yapfify xterm-color web-mode web-beautify unfill tagedit stickyfunc-enhance srefactor sql-indent smeargle slime-company slime slim-mode shell-pop scss-mode sass-mode pyvenv pytest pyenv-mode py-isort pug-mode pip-requirements orgit org-wiki org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-mime org-journal org-download mwim multi-term mmm-mode markdown-toc markdown-mode magit-gitflow magit-popup livid-mode skewer-mode simple-httpd live-py-mode json-mode json-snatcher json-reformat js2-refactor js2-mode js-doc hy-mode htmlize helm-pydoc helm-gitignore helm-css-scss helm-company helm-c-yasnippet haml-mode gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe+ git-gutter-fringe fringe-helper git-gutter+ git-gutter gh-md fuzzy flyspell-correct-helm flyspell-correct flycheck-pos-tip pos-tip flycheck evil-magit magit transient git-commit with-editor eshell-z eshell-prompt-extras esh-help emmet-mode diff-hl cython-mode csv-mode company-web web-completion-data company-tern dash-functional tern company-statistics company-anaconda company common-lisp-snippets coffee-mode clojure-snippets clj-refactor inflections edn multiple-cursors paredit peg cider-eval-sexp-fu cider sesman queue parseedn clojure-mode parseclj a auto-yasnippet yasnippet auto-dictionary anaconda-mode pythonic ac-ispell auto-complete ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint indent-guide hydra lv hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-themes helm-swoop helm-projectile projectile pkg-info epl helm-mode-manager helm-make helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist highlight evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu elisp-slime-nav dumb-jump f dash s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async))))
+    (w3m org-msg mu4e-maildirs-extension mu4e-alert mustache ht git org-page yaml-mode helm-gtags ggtags yapfify xterm-color web-mode web-beautify unfill tagedit stickyfunc-enhance srefactor sql-indent smeargle slime-company slime slim-mode shell-pop scss-mode sass-mode pyvenv pytest pyenv-mode py-isort pug-mode pip-requirements orgit org-wiki org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-mime org-journal org-download mwim multi-term mmm-mode markdown-toc markdown-mode magit-gitflow magit-popup livid-mode skewer-mode simple-httpd live-py-mode json-mode json-snatcher json-reformat js2-refactor js2-mode js-doc hy-mode htmlize helm-pydoc helm-gitignore helm-css-scss helm-company helm-c-yasnippet haml-mode gnuplot gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe+ git-gutter-fringe fringe-helper git-gutter+ git-gutter gh-md fuzzy flyspell-correct-helm flyspell-correct flycheck-pos-tip pos-tip flycheck evil-magit magit transient git-commit with-editor eshell-z eshell-prompt-extras esh-help emmet-mode diff-hl cython-mode csv-mode company-web web-completion-data company-tern dash-functional tern company-statistics company-anaconda company common-lisp-snippets coffee-mode clojure-snippets clj-refactor inflections edn multiple-cursors paredit peg cider-eval-sexp-fu cider sesman queue parseedn clojure-mode parseclj a auto-yasnippet yasnippet auto-dictionary anaconda-mode pythonic ac-ispell auto-complete ws-butler winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint indent-guide hydra lv hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-themes helm-swoop helm-projectile projectile pkg-info epl helm-mode-manager helm-make helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist highlight evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu elisp-slime-nav dumb-jump f dash s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
