@@ -2,6 +2,6 @@
 
 INSTALLDIR=${1:-$HOME}
 
-echo "Installing emacs-live..."
+echo "Installing Emacs-Live..."
 rm -rf $INSTALLDIR/.emacs.d
-ln -s $PWD/emacs-live $INSTALLDIR/.emacs.d
+ln -s $PWD/emacs-live.d $INSTALLDIR/.emacs.d

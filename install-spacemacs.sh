@@ -2,6 +2,6 @@
 
 INSTALLDIR=${1:-$HOME}
 
-echo "Installing spacemacs..."
+echo "Installing Spacemacs..."
 rm -rf $INSTALLDIR/.emacs.d
-ln -s $PWD/emacs.d $INSTALLDIR/.emacs.d
+ln -s $PWD/spacemacs.d $INSTALLDIR/.emacs.d

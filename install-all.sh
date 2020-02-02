@@ -31,7 +31,7 @@ ln -s $PWD/tmux.conf.local $INSTALLDIR/.tmux.conf.local 2> /dev/null
 mv $INSTALLDIR/.spacemacs $INSTALLDIR/.spacemacs.old
 ln -s $PWD/spacemacs $INSTALLDIR/.spacemacs 2> /dev/null
 mv $INSTALLDIR/.emacs.d $INSTALLDIR/.emacs.d.old
-ln -s $PWD/emacs.d $INSTALLDIR/.emacs.d 2> /dev/null
+ln -s $PWD/spacemacs.d $INSTALLDIR/.emacs.d 2> /dev/null
 
 #PSQL
 mv $INSTALLDIR/.psqlrc $INSTALLDIR/.psqlrc.old
