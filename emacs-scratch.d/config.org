@@ -1,0 +1,112 @@
+* Emacs settings
+#+BEGIN_SRC emacs-lisp
+  (use-package emacs
+    :preface
+    (defvar ian/indent-width 4) ; change this value to your preferred width
+    :config
+    (setq frame-title-format '("Yay-Evil") ; Yayyyyy Evil!
+          ring-bell-function 'ignore       ; minimise distraction
+          frame-resize-pixelwise t
+          default-directory "~/")
+
+    (tool-bar-mode -1)
+    (menu-bar-mode -1)
+
+    ;; better scrolling experience
+    (setq scroll-margin 0
+          scroll-conservatively 101 ; > 100
+          scroll-preserve-screen-position t
+          auto-window-vscroll nil)
+
+    ;; Always use spaces for indentation
+    (setq-default indent-tabs-mode nil
+                  tab-width ian/indent-width))
+#+END_SRC
+* Auto package update
+#+BEGIN_SRC emacs-lisp
+    (use-package auto-package-update
+      :defer 10
+      :config
+      (setq auto-package-update-delete-old-versions t)
+      (setq auto-package-update-hide-results t)
+      (auto-package-update-maybe))
+#+END_SRC
+* Shell
+#+BEGIN_SRC emacs-lisp
+    ;; TODO https://www.reddit.com/r/emacs/comments/5p3njk/help_terminal_zsh_control_characters_in_prompt/
+    (use-package shell-pop
+      :defer t
+      :custom
+	(shell-pop-universal-key "C-t")
+	(shell-pop-window-size 30)
+	(shell-pop-window-position "bottom")
+	(shell-pop-term-shell "/bin/zsh"))
+    (setq shell-file-name "/bin/zsh")
+    (setq system-uses-terminfo nil)
+#+END_SRC
+* Which key
+#+BEGIN_SRC emacs-lisp
+    (use-package which-key
+      :diminish
+      :defer 5
+      :config (which-key-mode)
+	      (which-key-setup-side-window-bottom)
+	      (setq which-key-idle-delay 0.05))
+#+END_SRC
+* Diminish
+#+BEGIN_SRC emacs-lisp
+    (use-package diminish
+      :defer 5
+	:config
+	    (diminish  'org-indent-mode))
+#+END_SRC
+* Magit
+#+BEGIN_SRC emacs-lisp
+  (use-package magit
+    :bind ("C-x g" . magit-status)
+    :config (add-hook 'with-editor-mode-hook #'evil-insert-state))
+#+END_SRC
+* HTMLize
+#+BEGIN_SRC emacs-lisp
+    (use-package htmlize :defer t)
+#+END_SRC
+* Org-mode
+#+BEGIN_SRC emacs-lisp
+    (use-package org-bullets
+      :hook (org-mode . org-bullets-mode))
+#+END_SRC
+* Dash
+#+BEGIN_SRC emacs-lisp
+    (use-package dash)
+#+END_SRC
+* S
+#+BEGIN_SRC emacs-lisp
+    (use-package s)
+#+END_SRC
+* F
+#+BEGIN_SRC emacs-lisp
+    (use-package f)
+#+END_SRC
+* Undo-tree
+#+BEGIN_SRC emacs-lisp
+    (use-package undo-tree
+      :diminish
+      :config
+      (global-undo-tree-mode)
+      (setq undo-tree-visualizer-timestamps t)
+      (setq undo-tree-visualizer-diff t))
+#+END_SRC
+* Evil
+#+BEGIN_SRC emacs-lisp
+    (use-package evil
+      :init
+      (setq evil-want-keybinding nil)
+      :config
+      (evil-mode 1))
+    (use-package evil-collection
+      :after evil
+      :config
+      (setq evil-collection-company-use-tng nil)
+      (evil-collection-init))
+    (use-package evil-magit)
+#+END_SRC
