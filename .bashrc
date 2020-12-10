@@ -21,3 +21,5 @@ export PATH=$PATH":/home/$USER/bin/:/home/$USER/.local/bin:$GOPATH/bin"
 #TERM=xterm-256color
 TERM=xterm-color
 if [ -f $(brew --prefix)/etc/bash_completion ]; then source $(brew --prefix)/etc/bash_completion; fi
+
+source /Users/jean-francoisparent/.config/broot/launcher/bash/br
