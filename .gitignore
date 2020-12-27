@@ -6,3 +6,4 @@ emacs-live.d
 spacemacs.d
 emacs-scratch.d/elpa
 .last-package-update-day
+*~
