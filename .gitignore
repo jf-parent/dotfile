@@ -4,3 +4,4 @@ emacs.d/eww-bookmarks
 emacs.d/org-journal.cache
 emacs-live.d
 emacs-scratch.d/elpa
+.last-package-update-day

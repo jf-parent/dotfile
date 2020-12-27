@@ -2,8 +2,7 @@
   :preface
   (defvar ian/indent-width 4) ; change this value to your preferred width
   :config
-  (setq frame-title-format '("Yay-Evil") ; Yayyyyy Evil!
-        ring-bell-function 'ignore       ; minimise distraction
+  (setq frame-title-format '("Personal Emacs")
         frame-resize-pixelwise t
         default-directory "~/")
 
@@ -26,6 +25,9 @@
   (setq auto-package-update-delete-old-versions t)
   (setq auto-package-update-hide-results t)
   (auto-package-update-maybe))
+
+(use-package zenburn-theme)
+(load-theme 'zenburn t)
 
 ;; TODO https://www.reddit.com/r/emacs/comments/5p3njk/help_terminal_zsh_control_characters_in_prompt/
 (use-package shell-pop
@@ -83,3 +85,28 @@
   (setq evil-collection-company-use-tng nil)
   (evil-collection-init))
 (use-package evil-magit)
+
+(defun my/evil-yank-advice (orig-fn beg end &rest args)
+    (pulse-momentary-highlight-region beg end)
+    (apply orig-fn beg end args)) 
+(advice-add 'evil-yank :around 'my/evil-yank-advice)
+
+(defun my/switch-to-scratch-buffer (&optional arg)
+    "Switch to scratch buffer"
+    (interactive "P")
+    (switch-to-buffer (get-buffer-create "*scratch*")))
+
+(use-package hydra)
+;; Buffer
+(defhydra hydra-buffer (global-map "C-x b")
+    "buffer"
+    ("S" my/switch-to-scratch-buffer "Switch to scratch buffer"))
+;; File
+(defhydra hydra-buffer (global-map "C-x f")
+    "file"
+    ("s" save-buffer "Save"))
+;; Zoom
+(defhydra hydra-zoom (global-map "C-x z")
+    "zoom"
+    ("+" text-scale-increase "in")
+    ("-" text-scale-decrease "out"))
