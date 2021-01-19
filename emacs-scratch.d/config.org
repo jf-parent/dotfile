@@ -35,6 +35,16 @@
     (use-package zenburn-theme)
     (load-theme 'zenburn t)
 #+END_SRC
+* Helm
+#+BEGIN_SRC emacs-lisp
+    (use-package helm)
+#+END_SRC
+* Winum
+#+BEGIN_SRC emacs-lisp
+    (use-package winum
+      :config
+      (winum-mode))
+#+END_SRC
 * Shell
 #+BEGIN_SRC emacs-lisp
     ;; TODO https://www.reddit.com/r/emacs/comments/5p3njk/help_terminal_zsh_control_characters_in_prompt/
@@ -52,7 +62,7 @@
 #+BEGIN_SRC emacs-lisp
     (use-package which-key
       :diminish
-      :defer 5
+      :defer 1
       :config (which-key-mode)
 	      (which-key-setup-side-window-bottom)
 	      (setq which-key-idle-delay 0.05))
@@ -116,6 +126,9 @@
 #+END_SRC
 * Functions
 #+BEGIN_SRC emacs-lisp
+    (load (concat (file-name-directory load-file-name)
+              "functions.el"))
+
     (defun my/evil-yank-advice (orig-fn beg end &rest args)
         (pulse-momentary-highlight-region beg end)
         (apply orig-fn beg end args)) 
@@ -128,18 +141,44 @@
 #+END_SRC
 * Keybinding
 #+BEGIN_SRC emacs-lisp
-    (use-package hydra)
+    (use-package general)
+    (require 'general)
+    (general-create-definer my-leader-def
+      :prefix "SPC")
+
+    ;; Top
+    (my-leader-def
+      :keymaps 'normal
+      "SPC" 'helm-M-x
+      "1" 'winum-select-window-1
+      "2" 'winum-select-window-2
+      "3" 'winum-select-window-3
+      "4" 'winum-select-window-4
+      "5" 'winum-select-window-5
+      "6" 'winum-select-window-6
+      "7" 'winum-select-window-7
+      "8" 'winum-select-window-8
+      "9" 'winum-select-window-9)
+
     ;; Buffer
-    (defhydra hydra-buffer (global-map "C-x b")
-        "buffer"
-        ("S" my/switch-to-scratch-buffer "Switch to scratch buffer"))
+    (my-leader-def 
+      :keymaps 'normal
+      "bS" 'my/switch-to-scratch-buffer
+      "bN" 'my/new-empty-buffer
+      "bs" 'save-buffer)
+
     ;; File
-    (defhydra hydra-file (global-map "C-x f")
-        "file"
-        ("s" save-buffer "Save"))
+
+    ;; Window
+    (my-leader-def
+      :keymaps 'normal
+      "wd" 'delete-window
+      "w/" 'split-window-horizontally
+      "w-" 'split-window-vertically)
+
     ;; Zoom
-    (defhydra hydra-zoom (global-map "C-x z")
-        "zoom"
-        ("+" text-scale-increase "in")
-        ("-" text-scale-decrease "out"))
+    (my-leader-def
+      :keymaps 'normal
+      "z+" 'text-scale-increase
+      "z-" 'text-scale-decrese)
 #+END_SRC
