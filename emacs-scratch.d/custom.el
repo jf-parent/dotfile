@@ -6,7 +6,7 @@
  '(helm-minibuffer-history-key "M-p")
  '(package-selected-packages
    (quote
-    (winum helm general hydra evil-magit evil-collection evil undo-tree f s org-bullets htmlize magit diminish which-key use-package shell-pop auto-package-update))))
+    (treemacs-evil treemacs winum helm general hydra evil-magit evil-collection evil undo-tree f s org-bullets htmlize magit diminish which-key use-package shell-pop auto-package-update))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
