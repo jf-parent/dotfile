@@ -5,3 +5,6 @@ emacs.d/org-journal.cache
 emacs-live.d
 spacemacs.d
 emacs-scratch.d/elpa
+.last-package-update-day
+*~
+*.swp
