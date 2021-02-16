@@ -32,7 +32,7 @@ This function should only modify configuration layer settings."
 
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
-   '(
+   '(html
      ;; ----------------------------------------------------------------
      ;; Example of useful layers you may want to use right away.
      ;; Uncomment some layer names and press `SPC f e R' (Vim style) or
@@ -48,17 +48,19 @@ This function should only modify configuration layer settings."
      gtags
      helm
      javascript
+     lsp
      markdown
      multiple-cursors
      (org :variables
           org-enable-org-journal-support t)
      orgwiki
-     (python :variables python-test-runner'pytest)
+     (python :variables python-backend 'lsp python-test-runner 'pytest)
      react
      semantic
-     (shell :variables shell-default-shell'term
-            shell-default-term-shell "/bin/zsh"
-            shell-default-position 'bottom shell-default-height 30)
+     (shell :variables shell-default-shell 'eshell)
+     ;; (shell :variables shell-default-shell 'term
+     ;;        shell-default-term-shell "/bin/zsh"
+     ;;        shell-default-position 'bottom shell-default-height 30)
      spell-checking
      sql
      syntax-checking
@@ -75,7 +77,7 @@ This function should only modify configuration layer settings."
    ;; `dotspacemacs/user-config'. To use a local version of a package, use the
    ;; `:location' property: '(your-package :location "~/path/to/your-package/")
    ;; Also include the dependencies as they will not be resolved automatically.
-   dotspacemacs-additional-packages '()
+   dotspacemacs-additional-packages '(org-drill git mustache)
 
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
@@ -523,8 +525,15 @@ Put your configuration code here, except for variables that should be set
 before packages are loaded."
   (require 'org-protocol)
 
+  ;; (setq flycheck-python-pycompile-executable "python3")
+  ;; (setq python-shell-interpreter "python3")
+
   ;; TCL
   ;; TODO create tcl layer
+	(add-hook 'tcl-mode-hook 
+						(lambda ()
+							(progn (whitespace-mode 1)
+							 (setq-default indent-tabs-mode t))))
   (spacemacs/declare-prefix-for-mode 'tcl-mode "me" "eval")
   (spacemacs/set-leader-keys-for-major-mode 'tcl-mode
     "'" 'run-tcl
@@ -564,18 +573,21 @@ before packages are loaded."
   (advice-add 'org-capture-kill :after 'my/delete-frame-if-neccessary)
   (advice-add 'org-capture-refile :after 'my/delete-frame-if-neccessary)
 
+  ;; https://orgmode.org/manual/Initial-visibility.html
+  (setq org-startup-folded t)
+
   (custom-set-variables
    '(org-capture-templates
      '(
        ("t" "Task" entry (file+headline "~/Google Drive/org/PREC.org" "ONETIME") "** %^{PROMPT}")
-       ("T" "Training" table-line (file+headline "~/Google Drive/org/wiki/journal2020.org" "Training log") "| %t | %^{prompt|TrainementSS|MartialArt|Bodyweight|Kettlebell|WimHof|Yoga|Mobility} | %^{prompt|0|10|15|20} |")
+       ("T" "Training" table-line (file+headline "~/Google Drive/org/wiki/journal2021.org" "Training log") "| %t | %^{prompt|TrainementSS|MartialArt|Bodyweight|Kettlebell|WimHof|Yoga|Mobility} | %^{prompt|0|10|15|20} |")
        ("a" "Abacus" table-line (file+headline "~/Google Drive/org/wiki/abacus.org" "Logs - Anzan") "| %t | %^{prompt}/20 | %^{prompt|[3rows][3digits][2500ms][no-sound]} |")
-       ("c" "Commute" table-line (file+headline "~/Google Drive/org/wiki/journal2020.org" "Commute log") "| %t | %^{prompt|Car/Bus|Bus/Car} | %^{prompt|4:05am|1:10pm} | %^{prompt|5:50am|3:05pm} | %^{prompt|Office|Home} | %^{prompt} | %^{prompt} |")
-       ("S" "Smoking" table-line (file+headline "~/Google Drive/org/wiki/journal2020.org" "Smoking log") "| %t | %^{prompt|1} | %^{prompt|Malboro} |")
-       ("!" "Stress" table-line (file+headline "~/Google Drive/org/wiki/journal2020.org" "Stress log") "| %t | %^{prompt|1} |")
-       ("s" "Sleep" table-line (file+headline "~/Google Drive/org/wiki/journal2020.org" "Sleeping log") "| %t | %^{prompt|18:00} | %^{prompt|3:30} | %^{prompt|9.0} |")
-       ("p" "Productivity" table-line (file+headline "~/Google Drive/org/wiki/journal2020.org" "Productivity log") "| %t | %^{prompt|3} |")
-       ("e" "Energy" table-line (file+headline "~/Google Drive/org/wiki/journal2020.org" "Energy log") "| %t | %^{prompt|3} |")
+       ("c" "Commute" table-line (file+headline "~/Google Drive/org/wiki/journal2021.org" "Commute log") "| %t | %^{prompt|Car/Bus|Bus/Car} | %^{prompt|4:05am|1:10pm} | %^{prompt|5:50am|3:05pm} | %^{prompt|Office|Home} | %^{prompt} | %^{prompt} |")
+       ("S" "Smoking" table-line (file+headline "~/Google Drive/org/wiki/journal2021.org" "Smoking log") "| %t | %^{prompt|1} | %^{prompt|Malboro} | %(progn (setq my/delete-frame-after-capture 0) \"\")")
+       ("!" "Stress" table-line (file+headline "~/Google Drive/org/wiki/journal2021.org" "Stress log") "| %t | %^{prompt|1} | %(progn (setq my/delete-frame-after-capture 0) \"\")")
+       ("s" "Sleep" table-line (file+headline "~/Google Drive/org/wiki/journal2021.org" "Sleeping log") "| %t | %^{prompt|18:00} | %^{prompt|3:30} | %^{prompt|9.0} | %(progn (setq my/delete-frame-after-capture 0) \"\")")
+       ("p" "Productivity" table-line (file+headline "~/Google Drive/org/wiki/journal2021.org" "Productivity log") "| %t | %^{prompt|3} | %(progn (setq my/delete-frame-after-capture 0) \"\")")
+       ("e" "Energy" table-line (file+headline "~/Google Drive/org/wiki/journal2021.org" "Energy log") "| %t | %^{prompt|3} | %(progn (setq my/delete-frame-after-capture 0) \"\")")
        ("L" "Protocol Link" entry (file+headline "~/Google Drive/org/inbox.org" "Inbox")
         "** [[%:link][%:description]] %(progn (setq my/delete-frame-after-capture 2) \"\")" :immediate-finish t))))
 
@@ -583,9 +595,11 @@ before packages are loaded."
   (setq org-refile-targets
         '(("~/Google Drive/org/wiki/hygiene.org" :maxlevel . 1)
           ("~/Google Drive/org/wiki/philosotrisme-de-oi.org" :maxlevel . 1)
+          ("~/Google Drive/org/wiki/medusa-i.org" :maxlevel . 1)
           ("~/Google Drive/org/wiki/finance.org" :maxlevel . 1)
           ("~/Google Drive/org/wiki/oiganisation.org" :maxlevel . 1)
           ("~/Google Drive/org/wiki/chess.org" :maxlevel . 1)
+          ("~/Google Drive/org/wiki/prepping.org" :maxlevel . 1)
           ("~/Google Drive/org/wiki/mandarin.org" :maxlevel . 1)
           ("~/Google Drive/org/wiki/emacs.org" :maxlevel . 1)
           ("~/Google Drive/org/wiki/music.org" :maxlevel . 1)))
@@ -632,8 +646,40 @@ This function is called at the very end of Spacemacs initialization."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(evil-want-Y-yank-to-eol nil)
+ '(org-capture-templates
+   '(("t" "Task" entry
+      (file+headline "~/Google Drive/org/PREC.org" "ONETIME")
+      "** %^{PROMPT}")
+     ("T" "Training" table-line
+      (file+headline "~/Google Drive/org/wiki/journal2021.org" "Training log")
+      "| %t | %^{prompt|TrainementSS|MartialArt|Bodyweight|Kettlebell|WimHof|Yoga|Mobility} | %^{prompt|0|10|15|20} |")
+     ("a" "Abacus" table-line
+      (file+headline "~/Google Drive/org/wiki/abacus.org" "Logs - Anzan")
+      "| %t | %^{prompt}/20 | %^{prompt|[3rows][3digits][2500ms][no-sound]} |")
+     ("c" "Commute" table-line
+      (file+headline "~/Google Drive/org/wiki/journal2021.org" "Commute log")
+      "| %t | %^{prompt|Car/Bus|Bus/Car} | %^{prompt|4:05am|1:10pm} | %^{prompt|5:50am|3:05pm} | %^{prompt|Office|Home} | %^{prompt} | %^{prompt} |")
+     ("S" "Smoking" table-line
+      (file+headline "~/Google Drive/org/wiki/journal2021.org" "Smoking log")
+      "| %t | %^{prompt|1} | %^{prompt|Malboro} | %(progn (setq my/delete-frame-after-capture 0) \"\")")
+     ("!" "Stress" table-line
+      (file+headline "~/Google Drive/org/wiki/journal2021.org" "Stress log")
+      "| %t | %^{prompt|1} | %(progn (setq my/delete-frame-after-capture 0) \"\")")
+     ("s" "Sleep" table-line
+      (file+headline "~/Google Drive/org/wiki/journal2021.org" "Sleeping log")
+      "| %t | %^{prompt|18:00} | %^{prompt|3:30} | %^{prompt|9.0} | %(progn (setq my/delete-frame-after-capture 0) \"\")")
+     ("p" "Productivity" table-line
+      (file+headline "~/Google Drive/org/wiki/journal2021.org" "Productivity log")
+      "| %t | %^{prompt|3} | %(progn (setq my/delete-frame-after-capture 0) \"\")")
+     ("e" "Energy" table-line
+      (file+headline "~/Google Drive/org/wiki/journal2021.org" "Energy log")
+      "| %t | %^{prompt|3} | %(progn (setq my/delete-frame-after-capture 0) \"\")")
+     ("L" "Protocol Link" entry
+      (file+headline "~/Google Drive/org/inbox.org" "Inbox")
+      "** [[%:link][%:description]] %(progn (setq my/delete-frame-after-capture 2) \"\")" :immediate-finish t)))
  '(package-selected-packages
-   '(yasnippet-snippets yapfify yaml-mode xterm-color web-beautify vterm unfill treemacs-magit terminal-here stickyfunc-enhance srefactor sql-indent sphinx-doc smeargle slime-company slime shell-pop rjsx-mode pytest pyenv-mode py-isort prettier-js pippel pipenv pyvenv pip-requirements orgit nodejs-repl mwim multi-term mmm-mode markdown-toc magit-svn magit-section magit-gitflow magit-popup livid-mode skewer-mode simple-httpd live-py-mode json-navigator hierarchy json-mode json-snatcher json-reformat js2-refactor multiple-cursors js2-mode js-doc importmagic epc ctable concurrent deferred helm-pydoc helm-gtags helm-gitignore helm-git-grep helm-company helm-cider helm-c-yasnippet gitignore-templates gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe+ fringe-helper git-gutter+ gh-md ggtags fuzzy forge markdown-mode ghub closql emacsql-sqlite emacsql treepy flyspell-correct-helm flyspell-correct flycheck-pos-tip pos-tip evil-magit magit git-commit with-editor transient eshell-z eshell-prompt-extras esh-help cython-mode csv-mode company-anaconda company common-lisp-snippets clojure-snippets cider-eval-sexp-fu cider sesman seq queue parseedn clojure-mode parseclj a browse-at-remote blacken auto-yasnippet yasnippet auto-dictionary anaconda-mode pythonic ac-ispell auto-complete org-journal org-rich-yank org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-mime org-download org-cliplink org-brain htmlize helm-org-rifle gnuplot evil-org ws-butler writeroom-mode visual-fill-column winum volatile-highlights vi-tilde-fringe uuidgen undo-tree treemacs-projectile treemacs-persp treemacs-icons-dired treemacs-evil treemacs ht pfuture toc-org symon symbol-overlay string-inflection spaceline-all-the-icons all-the-icons memoize spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode password-generator paradox spinner overseer org-superstar open-junk-file nameless move-text macrostep lorem-ipsum link-hint indent-guide hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-xref helm-themes helm-swoop helm-purpose window-purpose imenu-list helm-projectile helm-org helm-mode-manager helm-make helm-ls-git helm-flx helm-descbinds helm-ag google-translate golden-ratio flycheck-package package-lint flycheck flycheck-elsa flx-ido flx fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired f evil-tutor evil-textobj-line evil-surround evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-easymotion evil-cleverparens smartparens evil-args evil-anzu anzu eval-sexp-fu emr iedit clang-format projectile paredit list-utils pkg-info epl elisp-slime-nav editorconfig dumb-jump dash s dired-quick-sort devdocs define-word column-enforce-mode clean-aindent-mode centered-cursor-mode auto-highlight-symbol auto-compile packed aggressive-indent ace-window ace-link ace-jump-helm-line helm avy helm-core popup which-key use-package pcre2el org-plus-contrib hydra lv hybrid-mode font-lock+ evil goto-chg dotenv-mode diminish bind-map bind-key async)))
+   '(web-mode tagedit slim-mode scss-mode sass-mode pug-mode impatient-mode helm-css-scss haml-mode emmet-mode counsel-css counsel swiper ivy company-web web-completion-data add-node-modules-path lsp-ui lsp-python-ms lsp-pyright lsp-origami origami helm-lsp dap-mode lsp-treemacs bui lsp-mode cfrs posframe dash-functional mustache git org-drill yasnippet-snippets yapfify yaml-mode xterm-color web-beautify vterm unfill treemacs-magit terminal-here stickyfunc-enhance srefactor sql-indent sphinx-doc smeargle slime-company slime shell-pop rjsx-mode pytest pyenv-mode py-isort prettier-js pippel pipenv pyvenv pip-requirements orgit nodejs-repl mwim multi-term mmm-mode markdown-toc magit-svn magit-section magit-gitflow magit-popup livid-mode skewer-mode simple-httpd live-py-mode json-navigator hierarchy json-mode json-snatcher json-reformat js2-refactor multiple-cursors js2-mode js-doc importmagic epc ctable concurrent deferred helm-pydoc helm-gtags helm-gitignore helm-git-grep helm-company helm-cider helm-c-yasnippet gitignore-templates gitignore-mode gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe+ fringe-helper git-gutter+ gh-md ggtags fuzzy forge markdown-mode ghub closql emacsql-sqlite emacsql treepy flyspell-correct-helm flyspell-correct flycheck-pos-tip pos-tip evil-magit magit git-commit with-editor transient eshell-z eshell-prompt-extras esh-help cython-mode csv-mode company-anaconda company common-lisp-snippets clojure-snippets cider-eval-sexp-fu cider sesman seq queue parseedn clojure-mode parseclj a browse-at-remote blacken auto-yasnippet yasnippet auto-dictionary anaconda-mode pythonic ac-ispell auto-complete org-journal org-rich-yank org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-mime org-download org-cliplink org-brain htmlize helm-org-rifle gnuplot evil-org ws-butler writeroom-mode visual-fill-column winum volatile-highlights vi-tilde-fringe uuidgen undo-tree treemacs-projectile treemacs-persp treemacs-icons-dired treemacs-evil treemacs ht pfuture toc-org symon symbol-overlay string-inflection spaceline-all-the-icons all-the-icons memoize spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode password-generator paradox spinner overseer org-superstar open-junk-file nameless move-text macrostep lorem-ipsum link-hint indent-guide hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-xref helm-themes helm-swoop helm-purpose window-purpose imenu-list helm-projectile helm-org helm-mode-manager helm-make helm-ls-git helm-flx helm-descbinds helm-ag google-translate golden-ratio flycheck-package package-lint flycheck flycheck-elsa flx-ido flx fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired f evil-tutor evil-textobj-line evil-surround evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-easymotion evil-cleverparens smartparens evil-args evil-anzu anzu eval-sexp-fu emr iedit clang-format projectile paredit list-utils pkg-info epl elisp-slime-nav editorconfig dumb-jump dash s dired-quick-sort devdocs define-word column-enforce-mode clean-aindent-mode centered-cursor-mode auto-highlight-symbol auto-compile packed aggressive-indent ace-window ace-link ace-jump-helm-line helm avy helm-core popup which-key use-package pcre2el org-plus-contrib hydra lv hybrid-mode font-lock+ evil goto-chg dotenv-mode diminish bind-map bind-key async)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
