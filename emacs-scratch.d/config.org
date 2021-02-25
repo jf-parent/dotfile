@@ -1,5 +1,4 @@
 * TODO
-** last-buffer https://github.com/syl20bnr/spacemacs/blob/77d84b14e057aadc6a71c536104b57c617600f35/core/core-funcs.el#L319
 ** Projectile
 
 * Emacs settings
