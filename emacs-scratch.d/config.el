@@ -37,6 +37,7 @@
   :config
   (winum-mode))
 
+;; TODO https://www.reddit.com/r/emacs/comments/5p3njk/help_terminal_zsh_control_characters_in_prompt/
 (use-package shell-pop
   :defer t
   :custom
@@ -101,19 +102,36 @@
     (apply orig-fn beg end args)) 
 (advice-add 'evil-yank :around 'my/evil-yank-advice)
 
+;; Borrowed from Spacemacs
 (defun my/switch-to-scratch-buffer (&optional arg)
     "Switch to scratch buffer"
     (interactive "P")
     (switch-to-buffer (get-buffer-create "*scratch*")))
+
+;; Borrowed from Spacemacs
+;; https://github.com/syl20bnr/spacemacs/blob/77d84b14e057aadc6a71c536104b57c617600f35/core/core-funcs.el#L342
+(defun my/alternate-buffer (&optional window)
+    "Switch back and forth between current and last buffer in the
+     current window."
+     (interactive)
+     (cl-destructuring-bind (buf start pos)
+         (or (cl-find (window-buffer window) (window-prev-buffers)
+                 :key #'car :test-not #'eq)
+         (list (other-buffer) nil nil))
+         (if (not buf)
+             (message "Last buffer not found.")
+             (set-window-buffer-start-and-point window buf start pos))))
 
 (use-package general)
 (require 'general)
 (general-create-definer my-leader-def
   :prefix "SPC")
 
+(global-set-key (kbd "C-s") 'save-buffer)
 ;; Top
 (my-leader-def
   :keymaps 'normal
+  "TAB" 'my/alternate-buffer
   "SPC" 'helm-M-x
   "1" 'winum-select-window-1
   "2" 'winum-select-window-2
