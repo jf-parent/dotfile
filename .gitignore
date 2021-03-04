@@ -8,3 +8,5 @@ emacs-scratch.d/elpa
 .last-package-update-day
 *~
 *.swp
+*.eld
+emacs-scratch.d/.cache/*

@@ -29,6 +29,11 @@
 (use-package zenburn-theme)
 (load-theme 'zenburn t)
 
+(use-package projectile
+  :ensure t
+  :init
+  (projectile-mode +1))
+
 (use-package helm
   :config
   (helm-mode 1))
@@ -92,7 +97,7 @@
   :config
   (setq evil-collection-company-use-tng nil)
   (evil-collection-init))
-(use-package evil-magit)
+;;(use-package evil-magit)
 
 (load (concat (file-name-directory load-file-name)
           "functions.el"))
@@ -144,6 +149,11 @@
   "9" 'winum-select-window-9
   "0" 'treemacs-select-window)
 
+;; Application
+(my-leader-def 
+  :keymaps 'normal
+  "au" 'undo-tree-visualize)
+
 ;; Buffer
 (my-leader-def 
   :keymaps 'normal
@@ -161,6 +171,13 @@
 (my-leader-def
   :keymaps 'normal
   "gg" 'magit-status)
+
+;; Projectile
+(my-leader-def
+  :keymaps 'normal
+  "pg" 'projectile-grep
+  "pf" 'projectile-find-file
+  "pb" 'projectile-display-buffer)
 
 ;; Window
 (my-leader-def
@@ -240,15 +257,15 @@
   :after treemacs evil
   :ensure t)
 
-;; (use-package treemacs-projectile
-;;  :after treemacs projectile
-;;  :ensure t)
+(use-package treemacs-projectile
+  :after treemacs projectile
+  :ensure t)
 
-;; (use-package treemacs-icons-dired
-;;   :after treemacs dired
-;;   :ensure t
-;;   :config (treemacs-icons-dired-mode))
+ (use-package treemacs-icons-dired
+   :after treemacs dired
+   :ensure t
+   :config (treemacs-icons-dired-mode))
 
-;; (use-package treemacs-magit
-;;   :after treemacs magit
-;;   :ensure t)
+ (use-package treemacs-magit
+   :after treemacs magit
+   :ensure t)
