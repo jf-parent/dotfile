@@ -641,7 +641,7 @@ before packages are loaded."
 
   ;; org-agenda
   (setq org-agenda-files
-        '("~/Google Drive/org/wiki/middlegame.org" "~/Google Drive/org/wiki/SGD.org" "~/Google Drive/org/wiki/jobs.org" "~/Google Drive/org/PREC.org" "~/Google Drive/org/wiki/finance.org" "~/Google Drive/org/wiki/oiganisation.org"))
+        '("~/Google Drive/org/wiki/middlegame.org" "~/Google Drive/org/wiki/jobs.org" "~/Google Drive/org/PREC.org" "~/Google Drive/org/wiki/finance.org" "~/Google Drive/org/wiki/oiganisation.org" "~/Google Drive/org/wiki/prepping.org" "~/Google Drive/org/wiki/intelcom.org"))
 
   ;; Org-Page
   ;; @TODO load org-page properly

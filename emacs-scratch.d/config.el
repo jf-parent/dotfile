@@ -42,6 +42,12 @@
   :config
   (winum-mode))
 
+(use-package origami
+ :init
+ (add-hook 'prog-mode-hook #'origami-mode))
+
+(use-package rainbow-delimiters)
+
 ;; TODO https://www.reddit.com/r/emacs/comments/5p3njk/help_terminal_zsh_control_characters_in_prompt/
 (use-package shell-pop
   :defer t
@@ -131,8 +137,16 @@
 (require 'general)
 (general-create-definer my-leader-def
   :prefix "SPC")
+(general-create-definer my-extra-def
+  :prefix "TAB")
 
 (global-set-key (kbd "C-s") 'save-buffer)
+
+;; Tab
+(my-extra-def
+ :keymaps 'normal
+ "TAB" 'origami-recursively-toggle-node)
+
 ;; Top
 (my-leader-def
   :keymaps 'normal
@@ -158,6 +172,7 @@
 (my-leader-def 
   :keymaps 'normal
   "bb" 'helm-buffers-list
+  "bf" 'origami-toggle-all-nodes
   "bS" 'my/switch-to-scratch-buffer
   "bN" 'my/new-empty-buffer
   "bs" 'save-buffer)
@@ -269,3 +284,5 @@
  (use-package treemacs-magit
    :after treemacs magit
    :ensure t)
+
+(add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
