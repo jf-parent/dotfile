@@ -15,6 +15,15 @@
         scroll-preserve-screen-position t
         auto-window-vscroll nil)
 
+  ;; Default frame size / position
+  (add-to-list 'default-frame-alist '(height . 80))
+  (add-to-list 'default-frame-alist '(width . 240))
+  (add-to-list 'default-frame-alist '(left . 740))
+  (add-to-list 'default-frame-alist '(top . 140))
+
+  ;; No welcome screen
+  (setq inhibit-startup-screen t)
+
   ;; Always use spaces for indentation
   (setq-default indent-tabs-mode nil
                 tab-width ian/indent-width))
@@ -133,10 +142,17 @@
              (message "Last buffer not found.")
              (set-window-buffer-start-and-point window buf start pos))))
 
+(use-package awesome-tab
+  :load-path "local/awesome-tab"
+  :config
+  (awesome-tab-mode t))
+
 (use-package general)
 (require 'general)
+;; Space
 (general-create-definer my-leader-def
   :prefix "SPC")
+;; Tab
 (general-create-definer my-extra-def
   :prefix "TAB")
 
@@ -145,7 +161,11 @@
 ;; Tab
 (my-extra-def
  :keymaps 'normal
- "TAB" 'origami-recursively-toggle-node)
+ "TAB" 'origami-recursively-toggle-node
+ "SPC" 'awesome-tab-ace-jump
+ "h" 'awesome-tab-move-current-tab-to-left
+ "l" 'awesome-tab-move-current-tab-to-right
+ "x" 'kill-current-buffer)
 
 ;; Top
 (my-leader-def
@@ -286,3 +306,4 @@
    :ensure t)
 
 (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
+(treemacs)
