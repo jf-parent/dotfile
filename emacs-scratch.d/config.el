@@ -28,6 +28,19 @@
   (setq-default indent-tabs-mode nil
                 tab-width ian/indent-width))
 
+(defvar bootstrap-version)
+(let ((bootstrap-file
+     (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+    (bootstrap-version 5))
+(unless (file-exists-p bootstrap-file)
+  (with-current-buffer
+      (url-retrieve-synchronously
+       "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+       'silent 'inhibit-cookies)
+    (goto-char (point-max))
+    (eval-print-last-sexp)))
+(load bootstrap-file nil 'nomessage))
+
 (use-package auto-package-update
   :defer 10
   :config
@@ -38,10 +51,24 @@
 (use-package zenburn-theme)
 (load-theme 'zenburn t)
 
+(use-package cider
+ :ensure t)
+
+(use-package all-the-icons)
+
+(use-package shelldon
+:straight (shelldon :type git
+                    :host github
+                    :repo "Overdr0ne/shelldon"
+                    :branch "master"))
+
 (use-package projectile
   :ensure t
   :init
   (projectile-mode +1))
+
+(use-package ivy
+ :ensure t)
 
 (use-package helm
   :config
@@ -181,7 +208,9 @@
   "7" 'winum-select-window-7
   "8" 'winum-select-window-8
   "9" 'winum-select-window-9
-  "0" 'treemacs-select-window)
+  "0" 'treemacs-select-window
+  "$" 'shelldon-hist
+  "!" 'shelldon)
 
 ;; Application
 (my-leader-def 
@@ -206,6 +235,11 @@
 (my-leader-def
   :keymaps 'normal
   "gg" 'magit-status)
+
+;; Lisp
+(my-leader-def
+ :keymaps 'normal
+ "k'" 'cider-jack-in)
 
 ;; Projectile
 (my-leader-def

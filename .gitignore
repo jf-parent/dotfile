@@ -1,4 +1,5 @@
 .DS_Store
+straight
 favlist
 emacs.d/eww-bookmarks
 emacs.d/org-journal.cache

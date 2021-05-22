@@ -32,6 +32,21 @@
     (setq-default indent-tabs-mode nil
                   tab-width ian/indent-width))
 #+END_SRC
+* Straight
+#+BEGIN_SRC emacs-lisp
+  (defvar bootstrap-version)
+  (let ((bootstrap-file
+       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+      (bootstrap-version 5))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
+#+END_SRC
 * Auto package update
 #+BEGIN_SRC emacs-lisp
     (use-package auto-package-update
@@ -46,9 +61,22 @@
     (use-package zenburn-theme)
     (load-theme 'zenburn t)
 #+END_SRC
+* Clojure
+#+BEGIN_SRC emacs-lisp
+ (use-package cider
+  :ensure t)
+#+END_SRC
 * All the icons
-#+BEGIN_SRC
+#+BEGIN_SRC emacs-lisp
   (use-package all-the-icons)
+#+END_SRC
+* Shelldon
+#+BEGIN_SRC emacs-lisp
+  (use-package shelldon
+  :straight (shelldon :type git
+                      :host github
+                      :repo "Overdr0ne/shelldon"
+                      :branch "master"))
 #+END_SRC
 * Projectile
 #+BEGIN_SRC emacs-lisp
@@ -232,7 +260,9 @@
       "7" 'winum-select-window-7
       "8" 'winum-select-window-8
       "9" 'winum-select-window-9
-      "0" 'treemacs-select-window)
+      "0" 'treemacs-select-window
+      "$" 'shelldon-hist
+      "!" 'shelldon)
 
     ;; Application
     (my-leader-def 
@@ -257,6 +287,11 @@
     (my-leader-def
       :keymaps 'normal
       "gg" 'magit-status)
+
+    ;; Lisp
+    (my-leader-def
+     :keymaps 'normal
+     "k'" 'cider-jack-in)
 
     ;; Projectile
     (my-leader-def
