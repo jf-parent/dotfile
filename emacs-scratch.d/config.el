@@ -9,6 +9,9 @@
   (tool-bar-mode -1)
   (menu-bar-mode -1)
 
+  ;; Disable warning "cl package is deprecated"
+  (setq byte-compile-warnings '(cl-functions))
+
   ;; better scrolling experience
   (setq scroll-margin 0
         scroll-conservatively 101 ; > 100
@@ -66,9 +69,6 @@
   :ensure t
   :init
   (projectile-mode +1))
-
-(use-package ivy
- :ensure t)
 
 (use-package helm
   :config
