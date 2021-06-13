@@ -54,9 +54,15 @@
 (use-package zenburn-theme)
 (load-theme 'zenburn t)
 
+(use-package company)
+
 ;; Cider
 (use-package cider
   :ensure t)
+
+(add-hook 'cider-repl-mode-hook #'company-mode)
+(add-hook 'cider-mode-hook #'company-mode)
+
 ;; Paredit
 (use-package paredit
   :ensure t)
@@ -224,7 +230,6 @@
   "C" 'lispy-convolute
   "b" 'lispy-forward-barf-sexp
   "B" 'lispy-backward-barf-sexp
-  "f" 'lispy-forward
   "h" 'lispy-move-right
   "H" 'lispy-move-left
   "j" 'lispy-move-down
@@ -240,6 +245,14 @@
   "x" 'lispy-delete
   "y" 'lispy-new-copy
   )
+
+;; Normal mode remap
+(evil-define-key nil evil-normal-state-map
+ "B" 'lispy-forward-barf-sexp
+ "C" 'lispy-backward-barf-sexp
+ "s" 'lispy-forward-slurp-sexp
+ "S" 'lispy-backward-slurp-sexp
+ "Y" 'lispy-new-copy)
 
 ;; Application
 (my-leader-def 

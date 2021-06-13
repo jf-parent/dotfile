@@ -1,1 +1,0 @@
-("~/Documents/PROG/dotfile/" "~/Documents/PROG/LISP/boudoir-website/" "~/Documents/PROG/LISP/anagram/" "~/Documents/PROG/PYTHON/interviews/" "~/Documents/PROG/dotfile/spacemacs.d/" "~/Documents/PROG/PYTHON/pixelsort/" "~/Documents/PROG/PYTHON/crm/" "~/Documents/PROG/PYTHON/FoxDot/" "~/Documents/PROG/PYTHON/audio-processing/")

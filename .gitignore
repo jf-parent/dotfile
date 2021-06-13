@@ -1,3 +1,5 @@
+# -*- mode: gitignore; -*-
+
 .DS_Store
 straight
 favlist
@@ -5,9 +7,57 @@ emacs.d/eww-bookmarks
 emacs.d/org-journal.cache
 emacs-live.d
 spacemacs.d
-emacs-scratch.d/elpa
 .last-package-update-day
+
 *~
 *.swp
 *.eld
 emacs-scratch.d/.cache/*
+
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# Org-mode
+.org-id-locations
+*_archive
+
+# flymake-mode
+*_flymake.*
+
+# eshell files
+/eshell/history
+/eshell/lastdir
+
+# elpa packages
+*/elpa/
+
+# reftex files
+*.rel
+
+# AUCTeX auto folder
+/auto/
+
+# cask packages
+.cask/
+dist/
+
+# Flycheck
+flycheck_*.el
+
+# server auth directory
+/server/
+
+# projectiles files
+.projectile
+
+# directory configuration
+.dir-locals.el
+
+# network security
+/network-security.data

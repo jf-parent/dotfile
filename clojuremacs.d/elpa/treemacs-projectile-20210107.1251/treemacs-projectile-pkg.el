@@ -1,2 +1,0 @@
-;;; Generated package description from /Users/jean-francoisparent/Documents/PROG/dotfile/emacs-scratch.d/elpa/treemacs-projectile-20210107.1251/treemacs-projectile.el  -*- no-byte-compile: t -*-
-(define-package "treemacs-projectile" "20210107.1251" "Projectile integration for treemacs" '((emacs "26.1") (projectile "0.14.0") (treemacs "0.0")) :commit "c607beb5633cfc60d1dee53f0399f5fa03ac29a1" :authors '(("Alexander Miller" . "alexanderm@web.de")) :maintainer '("Alexander Miller" . "alexanderm@web.de") :url "https://github.com/Alexander-Miller/treemacs")
