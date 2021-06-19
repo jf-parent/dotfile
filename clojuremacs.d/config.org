@@ -116,8 +116,8 @@
       (winum-mode))
 #+END_SRC
 * Origami / folding
-* TODO fold python,clojure by default
 #+BEGIN_SRC emacs-lisp
+   ;; TODO fold python,clojure by default
    (use-package origami
     :init
     (add-hook 'prog-mode-hook #'origami-mode))

@@ -12,6 +12,19 @@
   ;; Disable warning "cl package is deprecated"
   (setq byte-compile-warnings '(cl-functions))
 
+  ;; Ansi color
+  ;;(use-package tty-format
+  ;;  :load-path "local/tty-format")
+
+  ;;(require 'ansi-color)
+  ;;(defun my/display-ansi-colors ()
+  ;;  (interactive)
+  ;;  (ansi-color-apply-on-region (point-min) (point-max)))
+
+  ;;(defun display-ansi-colors ()
+  ;;  (interactive)
+  ;;  (format-decode-buffer 'ansi-colors))
+
   ;; better scrolling experience
   (setq scroll-margin 0
         scroll-conservatively 101 ; > 100
@@ -44,12 +57,12 @@
     (eval-print-last-sexp)))
 (load bootstrap-file nil 'nomessage))
 
-(use-package auto-package-update
-  :defer 10
-  :config
-  (setq auto-package-update-delete-old-versions t)
-  (setq auto-package-update-hide-results t)
-  (auto-package-update-maybe))
+;;    (use-package auto-package-update
+;;      :defer 10
+;;      :config
+;;      (setq auto-package-update-delete-old-versions t)
+;;      (setq auto-package-update-hide-results t)
+;;      (auto-package-update-maybe))
 
 (use-package zenburn-theme)
 (load-theme 'zenburn t)
@@ -77,6 +90,10 @@
 (use-package winum
   :config
   (winum-mode))
+
+(use-package pipenv)
+(use-package pytest)
+;;(add-to-list 'auto-mode-alist '("\\*pytest\\'" . display-ansi-colors))
 
 (use-package origami
  :init
