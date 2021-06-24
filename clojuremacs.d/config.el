@@ -44,12 +44,12 @@
     (eval-print-last-sexp)))
 (load bootstrap-file nil 'nomessage))
 
-(use-package auto-package-update
-  :defer 10
-  :config
-  (setq auto-package-update-delete-old-versions t)
-  (setq auto-package-update-hide-results t)
-  (auto-package-update-maybe))
+;;(use-package auto-package-update
+;;  :defer 10
+;;  :config
+;;  (setq auto-package-update-delete-old-versions t)
+;;  (setq auto-package-update-hide-results t)
+;;  (auto-package-update-maybe))
 
 (use-package zenburn-theme)
 (load-theme 'zenburn t)
@@ -91,6 +91,7 @@
   :config
   (winum-mode))
 
+;; TODO fold python,clojure by default
 (use-package origami
  :init
  (add-hook 'prog-mode-hook #'origami-mode))
@@ -195,6 +196,9 @@
 ;; Tab
 (general-create-definer my-extra-def
   :prefix "TAB")
+;; Comma
+(general-create-definer my-mode-def
+  :prefix ",")
 
 (global-set-key (kbd "C-s") 'save-buffer)
 
@@ -203,15 +207,32 @@
  :keymaps 'normal
  "TAB" 'origami-recursively-toggle-node
  "SPC" 'awesome-tab-ace-jump
+ "au" 'undo-tree-visualize
+ "bb" 'helm-buffers-list
+ "bf" 'origami-toggle-all-nodes
+ "bS" 'my/switch-to-scratch-buffer
+ "bN" 'my/new-empty-buffer
+ "bs" 'save-buffer
+ "ff" 'helm-find-files
+ "gg" 'magit-status
  "h" 'awesome-tab-move-current-tab-to-left
  "l" 'awesome-tab-move-current-tab-to-right
- "x" 'kill-current-buffer)
+ "pg" 'projectile-grep
+ "pf" 'projectile-find-file
+ "pb" 'projectile-display-buffer
+ "wd" 'delete-window
+ "w/" 'split-window-horizontally
+ "w-" 'split-window-vertically
+ "x" 'kill-current-buffer
+ "z+" 'text-scale-increase
+ "z-" 'text-scale-decrese
+ )
 
 ;; Top
 (my-leader-def
   :keymaps 'normal
   "TAB" 'my/alternate-buffer
-  "SPC SPC" 'helm-M-x
+  "SPC" 'helm-M-x
   "1" 'winum-select-window-1
   "2" 'winum-select-window-2
   "3" 'winum-select-window-3
@@ -254,54 +275,10 @@
  "S" 'lispy-backward-slurp-sexp
  "Y" 'lispy-new-copy)
 
-;; Application
-(my-leader-def 
-  :keymaps 'normal
-  "SPC au" 'undo-tree-visualize)
-
-;; Buffer
-(my-leader-def 
-  :keymaps 'normal
-  "SPC bb" 'helm-buffers-list
-  "SPC bf" 'origami-toggle-all-nodes
-  "SPC bS" 'my/switch-to-scratch-buffer
-  "SPC bN" 'my/new-empty-buffer
-  "SPC bs" 'save-buffer)
-
-;; File
-(my-leader-def
-  :keymaps 'normal
-  "SPC ff" 'helm-find-files)
-
-;; Git
-(my-leader-def
-  :keymaps 'normal
-  "SPC gg" 'magit-status)
-
-;; Lisp
-(my-leader-def
+;; Clojure
+(my-mode-def
  :keymaps 'normal
- "SPC k'" 'cider-jack-in)
-
-;; Projectile
-(my-leader-def
-  :keymaps 'normal
-  "SPC pg" 'projectile-grep
-  "SPC pf" 'projectile-find-file
-  "SPC pb" 'projectile-display-buffer)
-
-;; Window
-(my-leader-def
-  :keymaps 'normal
-  "SPC wd" 'delete-window
-  "SPC w/" 'split-window-horizontally
-  "SPC w-" 'split-window-vertically)
-
-;; Zoom
-(my-leader-def
-  :keymaps 'normal
-  "SPC z+" 'text-scale-increase
-  "SPC z-" 'text-scale-decrese)
+ "'" 'cider-jack-in)
 
 (use-package treemacs
   :ensure t
