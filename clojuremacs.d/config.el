@@ -56,6 +56,9 @@
 
 (use-package company)
 
+(use-package ag)
+(use-package helm-ag)
+
 ;; Cider
 (use-package cider
   :ensure t)
@@ -69,6 +72,8 @@
 ;; Lispy
 (use-package lispy
   :ensure t)
+;; Smartparens
+(use-package smartparens)
 
 (use-package all-the-icons)
 
@@ -86,6 +91,7 @@
 (use-package helm
   :config
   (helm-mode 1))
+(use-package helm-projectile)
 
 (use-package winum
   :config
@@ -148,6 +154,7 @@
   (setq evil-want-keybinding nil)
   :config
   (evil-mode 1))
+(use-package evil-commentary)
 (use-package evil-collection
   :after evil
   :config
@@ -209,6 +216,7 @@
  "SPC" 'awesome-tab-ace-jump
  "au" 'undo-tree-visualize
  "bb" 'helm-buffers-list
+ "bd" 'evil-delete-buffer
  "bf" 'origami-toggle-all-nodes
  "bS" 'my/switch-to-scratch-buffer
  "bN" 'my/new-empty-buffer
@@ -217,9 +225,9 @@
  "gg" 'magit-status
  "h" 'awesome-tab-move-current-tab-to-left
  "l" 'awesome-tab-move-current-tab-to-right
- "pg" 'projectile-grep
- "pf" 'projectile-find-file
- "pb" 'projectile-display-buffer
+ "ps" 'helm-projectile-ag
+ "pf" 'helm-projectile-find-file
+ "pb" 'helm-projectile-display-buffer
  "wd" 'delete-window
  "w/" 'split-window-horizontally
  "w-" 'split-window-vertically
@@ -230,7 +238,7 @@
 
 ;; Top
 (my-leader-def
-  :keymaps 'normal
+  :keymaps '(normal visual)
   "TAB" 'my/alternate-buffer
   "SPC" 'helm-M-x
   "1" 'winum-select-window-1
@@ -247,6 +255,7 @@
   "!" 'shelldon
   "^" 'lispy-beginning-of-defun
   "=" 'lispy-tab
+  ";" 'evil-commentary
   "c" 'lispy-clone
   "C" 'lispy-convolute
   "b" 'lispy-forward-barf-sexp
@@ -260,10 +269,11 @@
   "o" 'lispy-parens-down
   "s" 'lispy-forward-slurp-sexp
   "S" 'lispy-backward-slurp-sexp
+  "t" 'sp-transpose-sexp
   "u" 'lispy-raise-some
   "w" 'paredit-wrap-round
   "W" 'paredit-splice-sexp
-  "x" 'lispy-delete
+  "x" 'sp-kill-sexp
   "y" 'lispy-new-copy
   )
 

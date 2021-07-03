@@ -13,6 +13,7 @@ spacemacs.d
 *.swp
 *.eld
 emacs-scratch.d/.cache/*
+clojuremacs.d/.cache/*
 
 *~
 \#*\#
