@@ -151,6 +151,7 @@
   (setq evil-want-keybinding nil)
   :config
   (evil-mode 1))
+(use-package evil-commentary)
 (use-package evil-collection
   :after evil
   :config
@@ -213,7 +214,7 @@
 
 ;; Top
 (my-leader-def
-  :keymaps 'normal
+  :keymaps '(visual normal)
   "TAB" 'my/alternate-buffer
   "SPC" 'helm-M-x
   "1" 'winum-select-window-1
@@ -242,6 +243,13 @@
   "bS" 'my/switch-to-scratch-buffer
   "bN" 'my/new-empty-buffer
   "bs" 'save-buffer)
+
+;; Comment
+(my-leader-def 
+  :keymaps '(normal visual)
+  "cl" 'evil-commentary
+  )
+
 
 ;; File
 (my-leader-def
